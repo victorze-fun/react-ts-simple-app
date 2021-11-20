@@ -1,26 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import { TaskForm } from "./components/TaskForm";
+import { TaskList } from "./components/TaskList";
+import { Task } from "./interfaces/Task";
+import logo from "./logo.svg";
+import { getCurrentTimestamp } from "./utils";
 
-function App() {
+interface Props {
+  title?: string;
+}
+
+export function App({ title = "foo bar" }: Props) {
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: 1,
+      title: "Learn React xd",
+      description: "Learn React",
+      completed: false,
+    },
+  ]);
+
+  const addTask = (task: Task) =>
+    setTasks([
+      ...tasks,
+      { ...task, id: getCurrentTimestamp(), completed: false },
+    ]);
+
+  const deleteTask = (id: number) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-dark text-white" style={{ height: "100vh" }}>
+      <nav className="navbar navbar-dark bg-primary">
+        <div className="container">
+          <a href="/" className="navbar-brand">
+            <img src={logo} alt="React Logo" style={{ width: "4rem" }} />
+            {title && <span>{title}</span>}
+          </a>
+        </div>
+      </nav>
+
+      <main className="container p-4">
+        <div className="row">
+          <div className="col-md-4">
+            <TaskForm addTask={addTask} />
+          </div>
+          <div className="col-md-8">
+            <div className="row">
+              <TaskList tasks={tasks} deleteTask={deleteTask} />
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
-
-export default App;
